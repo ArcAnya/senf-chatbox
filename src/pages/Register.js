@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
-import { auth } from '../firebase'
+import { auth, db } from '../firebase'
+import { setDoc, doc, Timestamp } from 'firebase/firestore'
+import { useNavigate } from 'react-router-dom'
 
 const Register = () => {
 
@@ -12,6 +14,8 @@ const Register = () => {
         loading: false
     })
 
+    const navigate = useNavigate();
+
     const { name, email, password, error, loading } = data;
 
     const handleChange = (e) => {
@@ -21,8 +25,8 @@ const Register = () => {
     const handleSubmit = async e => {
         e.preventDefault();
         setData({ ...data, error: null, loading: true })
-        if (!name || !email || !password) { 
-            setData({ ...data, error: 'All fields are required' }); 
+        if (!name || !email || !password) {
+            setData({ ...data, error: 'All fields are required' });
         }
         try {
             const result = await createUserWithEmailAndPassword(
@@ -30,13 +34,27 @@ const Register = () => {
                 email,
                 password
             );
-            console.log(result.user)
+            await setDoc(doc(db, 'users', result.user.uid), {
+                uid: result.user.uid,
+                name,
+                email,
+                createdAt: Timestamp.fromDate(new Date()),
+                isOnline: true
+            });
+            setData({
+                name: '',
+                email: '',
+                password: '',
+                error: null,
+                loading: false
+            });
+            navigate('/');
         } catch (err) {
-    
+            setData({...data, error: err.message, loading: false})
         }
     }
 
-    
+
 
     return (
         <section>
@@ -56,7 +74,7 @@ const Register = () => {
                 </div>
                 {error ? <p className="error">{error}</p> : null}
                 <div className="btn_container">
-                    <button className="btn">Register</button>
+                    <button className="btn" disabled={loading}>Register</button>
                 </div>
             </form>
 
