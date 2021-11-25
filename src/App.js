@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import AuthProvider from './context/auth';
 import PrivateRoute from './components/PrivateRoute';
 import Home from './pages/Home'
+import Profile from './pages/Profile';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route exact path='/register' element={<Register />} />
           <Route exact path='/login' element={<Login />} />
           <Route exact path='/' element={<PrivateRoute />}>
+          <Route exact path='/profile' element={<Profile />} />
             <Route exact path='/' element={<Home />} />
           </Route>
         </Routes>
