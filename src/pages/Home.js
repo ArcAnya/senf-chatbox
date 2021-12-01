@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { db, auth, storage } from '../firebase'
-import { collection, query, where, onSnapshot, addDoc, Timestamp, orderBy } from 'firebase/firestore'
+import { collection, query, where, onSnapshot, addDoc, Timestamp, orderBy, setDoc, doc } from 'firebase/firestore'
 import User from '../components/User'
 import MessageForm from '../components/MessageForm'
 import { ref, getDownloadURL, uploadBytes } from 'firebase/storage'
@@ -72,6 +72,16 @@ const Home = () => {
             createdAt: Timestamp.fromDate(new Date()),
             media: url || ""
         })
+
+        await setDoc(doc(db, "lastMsg", id), {
+            text,
+            from: user1,
+            to: user2,
+            createdAt: Timestamp.fromDate(new Date()),
+            media: url || "",
+            unread: true,
+        })
+
         setText("")
     }
 
@@ -79,7 +89,7 @@ const Home = () => {
     return (
         <div className='home_container'>
             <div className='users_container'>
-                {users.map(user => <User key={user.uid} user={user} selectUser={selectUser} />)}
+                {users.map(user => <User key={user.uid} user={user} selectUser={selectUser} user1={user1}/>)}
             </div>
             <div className="messages_container">
                 {chat ? (
