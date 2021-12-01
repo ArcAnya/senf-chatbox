@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react'
-import { db, auth } from '../firebase'
+import { db, auth, storage } from '../firebase'
 import { collection, query, where, onSnapshot, addDoc, Timestamp } from 'firebase/firestore'
 import User from '../components/User'
 import MessageForm from '../components/MessageForm'
+import { ref, getDownloadURL, uploadBytes } from 'firebase/storage'
 
 
 const Home = () => {
     const [users, setUsers] = useState([])
     const [chat, setChat] = useState("")
     const [text, setText] = useState("")
+    const [img, setImg] = useState("")
 
     const user1 = auth.currentUser.uid
 
@@ -36,11 +38,21 @@ const Home = () => {
         const user2 = chat.uid
         // create id for Document, make sure that it's the same no matter whether user1 or user2 writes 
         const id = user1 > user2 ? `${user1 + user2}` : `${user2 + user1}`
+
+        let url;
+        if (img) {
+            const imgRef = ref(storage, `images/${new Date().getTime()} - ${img.name}`)
+            const snap = await uploadBytes(imgRef, img)
+            const dlUrl = await getDownloadURL(ref(storage, snap.ref.fullPath))
+            url = dlUrl
+        }
+
         await addDoc(collection(db, "messages", id, 'chat'), {
             text,
             from: user1,
             to: user2,
-            createdAt: Timestamp.fromDate(new Date())
+            createdAt: Timestamp.fromDate(new Date()),
+            media: url || ""
         })
         setText("")
     }
@@ -57,7 +69,7 @@ const Home = () => {
                         <div className="messages_user">
                             <h3>{chat.name}</h3>
                         </div>
-                        <MessageForm handleSubmit={handleSubmit} text={text} setText={setText} />
+                        <MessageForm handleSubmit={handleSubmit} text={text} setText={setText} setImg={setImg}/>
                     </>
                 ) : (
                     <h3 className="no_conv">Select a user to start conversation</h3>
