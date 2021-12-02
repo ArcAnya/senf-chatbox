@@ -8,9 +8,9 @@ import { getDoc, doc, updateDoc } from 'firebase/firestore'
 import { useNavigate } from 'react-router-dom'
 
 const Profile = () => {
-    const [img, setImg] = useState('');
-    const [user, setUser] = useState('');
-    const navigate = useNavigate();
+    const [img, setImg] = useState('')
+    const [user, setUser] = useState('')
+    const navigate = useNavigate()
 
     useEffect(() => {
         getDoc(doc(db, 'users', auth.currentUser.uid)).then(docSnap => {
@@ -43,7 +43,7 @@ const Profile = () => {
             }
             uploadImg()
         }
-    }, [img, user.avatarPath]);
+    }, [img, user.avatarPath])
 
     const deleteImage = async () => {
         try {

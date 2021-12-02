@@ -1,3 +1,6 @@
+Check the current deployed version here: https://senf-chatbox.vercel.app/ 
+Inspired by: https://github.com/itsmefarhan/react-firebase-chat 
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
