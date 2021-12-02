@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { db, auth, storage } from '../firebase'
-import { collection, query, where, onSnapshot, addDoc, Timestamp, orderBy, setDoc, doc } from 'firebase/firestore'
+import { collection, query, where, onSnapshot, addDoc, Timestamp, orderBy, setDoc, doc, getDoc, updateDoc } from 'firebase/firestore'
 import User from '../components/User'
 import MessageForm from '../components/MessageForm'
 import { ref, getDownloadURL, uploadBytes } from 'firebase/storage'
@@ -30,7 +30,7 @@ const Home = () => {
         return () => unsub()
     }, [])
 
-    const selectUser = (user) => {
+    const selectUser = async (user) => {
         setChat(user)
         console.log(user)
 
@@ -47,6 +47,12 @@ const Home = () => {
             })
             setMsgs(msgs)
         })
+        const docSnap = await getDoc(doc(db, "lastMsg", id))
+        if(docSnap.data().from !== user1) {
+            await updateDoc(doc(db, "lastMsg", id), {
+                unread: false
+            })
+        }
     }
 
     console.log(msgs)
@@ -89,7 +95,7 @@ const Home = () => {
     return (
         <div className='home_container'>
             <div className='users_container'>
-                {users.map(user => <User key={user.uid} user={user} selectUser={selectUser} user1={user1}/>)}
+                {users.map(user => <User key={user.uid} user={user} selectUser={selectUser} user1={user1} chat={chat}/>)}
             </div>
             <div className="messages_container">
                 {chat ? (
