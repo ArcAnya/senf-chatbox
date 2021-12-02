@@ -32,7 +32,6 @@ const Home = () => {
 
     const selectUser = async (user) => {
         setChat(user)
-        console.log(user)
 
         const user2 = user.uid
         const id = user1 > user2 ? `${user1 + user2}` : `${user2 + user1}`
@@ -59,7 +58,6 @@ const Home = () => {
         }
     }
 
-    console.log(msgs)
 
     const handleSubmit = async e => {
         e.preventDefault()
@@ -95,7 +93,6 @@ const Home = () => {
         setText("")
     }
 
-    console.log(users)
     return (
         <div className='home_container'>
             <div className='users_container'>
