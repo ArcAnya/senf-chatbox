@@ -1,5 +1,4 @@
-import React, { useState } from 'react'
-import { useEffect } from 'react/cjs/react.development'
+import React, { useState, useEffect } from 'react'
 import Camera from '../components/svg/Camera'
 import Delete from '../components/svg/Delete'
 import Img from '../icon-192.png'
