@@ -5,7 +5,6 @@ import User from '../components/User'
 import MessageForm from '../components/MessageForm'
 import { ref, getDownloadURL, uploadBytes } from 'firebase/storage'
 import Message from '../components/Message'
-import Searchbar from '../components/Searchbar'
 import { useTranslation } from "react-i18next"
 
 
@@ -16,6 +15,7 @@ const Home = () => {
     const [img, setImg] = useState("")
     const [msgs, setMsgs] = useState("")
     const { t } = useTranslation()
+    const [searchTerm, setSearchTerm] = useState("");
 
     const user1 = auth.currentUser.uid
 
@@ -99,11 +99,32 @@ const Home = () => {
     return (
         <div className='home_container'>
             <div className='users_container'>
-            <Searchbar
-                placeholder={t("search_for_people")}
-                /* setSearchTerm={setSearchTerm}
-                searchTerm={searchTerm} */
-            />
+                <input
+                    type="text"
+                    placeholder={t("search_for_people")}
+                    onChange={(event) => { setSearchTerm(event.target.value) }}
+                />
+                {searchTerm ? (
+                    <div className='users_search'>
+                        {users.filter((val) => {
+                            if (val.name.toLowerCase().includes(searchTerm.toLocaleLowerCase())) {
+                                return val
+                            } else {
+                                return ""
+                            }
+                        }
+                        ).map((val, key) => {
+                            return (
+                                <div key={key}>
+                                    <p>{val.name}</p>
+                                </div>
+                            )
+                        })}
+                    </div>)
+                    :
+                    null
+                }
+
                 {users.map(user => <User key={user.uid} user={user} selectUser={selectUser} user1={user1} chat={chat} />)}
             </div>
             <div className="messages_container">
