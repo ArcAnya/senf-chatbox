@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { db, auth, storage } from '../firebase'
-import { collection, query, where, onSnapshot, addDoc, Timestamp, orderBy, setDoc, doc, getDoc, updateDoc } from 'firebase/firestore'
+import { collection, query, where, onSnapshot, addDoc, Timestamp, orderBy, setDoc, doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore'
 import User from '../components/User'
 import MessageForm from '../components/MessageForm'
 import { ref, getDownloadURL, uploadBytes } from 'firebase/storage'
@@ -15,11 +15,17 @@ const Home = () => {
     const [img, setImg] = useState("")
     const [msgs, setMsgs] = useState("")
     const { t } = useTranslation()
-    const [searchTerm, setSearchTerm] = useState("");
+    const [searchTerm, setSearchTerm] = useState("")
+    const [user, setUser] = useState('')
 
     const user1 = auth.currentUser.uid
 
     useEffect(() => {
+        getDoc(doc(db, 'users', auth.currentUser.uid)).then(docSnap => {
+            if (docSnap.exists) {
+                setUser(docSnap.data())
+            }
+        })
         const usersRef = collection(db, 'users')
         // querying the entire users collection except the currentUser
         const q = query(usersRef, where('uid', 'not-in', [user1]))
@@ -84,6 +90,17 @@ const Home = () => {
             media: url || ""
         })
 
+        await updateDoc(doc(db, 'users', user1), {
+            interactedUsers: arrayUnion(user2)
+        })
+
+        // get list of users the current user interacted with
+        console.log(user.interactedUsers)
+
+        await updateDoc(doc(db, 'users', user2), {
+            interactedUsers: arrayUnion(user1)
+        })
+
         await setDoc(doc(db, "lastMsg", id), {
             text,
             from: user1,
@@ -124,8 +141,13 @@ const Home = () => {
                     :
                     null
                 }
-
-                {users.map(user => <User key={user.uid} user={user} selectUser={selectUser} user1={user1} chat={chat} />)}
+                {users.filter((val) => {
+                    if (user.interactedUsers.indexOf(val.uid) > -1) {
+                        return val
+                    } else {
+                        return ""
+                    }
+                }).map(user => <User key={user.uid} user={user} selectUser={selectUser} user1={user1} chat={chat} />)}
             </div>
             <div className="messages_container">
                 {chat ? (
