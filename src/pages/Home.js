@@ -5,6 +5,8 @@ import User from '../components/User'
 import MessageForm from '../components/MessageForm'
 import { ref, getDownloadURL, uploadBytes } from 'firebase/storage'
 import Message from '../components/Message'
+import Searchbar from '../components/Searchbar'
+import { useTranslation } from "react-i18next"
 
 
 const Home = () => {
@@ -13,6 +15,7 @@ const Home = () => {
     const [text, setText] = useState("")
     const [img, setImg] = useState("")
     const [msgs, setMsgs] = useState("")
+    const { t } = useTranslation()
 
     const user1 = auth.currentUser.uid
 
@@ -28,7 +31,7 @@ const Home = () => {
             setUsers(users);
         })
         return () => unsub()
-    }, [])
+    }, [user1])
 
     const selectUser = async (user) => {
         setChat(user)
@@ -50,7 +53,7 @@ const Home = () => {
         // get last msg between logged in user and selected user
         const docSnap = await getDoc(doc(db, "lastMsg", id))
         // if last message exists and msg is from selected user
-        if(docSnap.data() && docSnap.data().from !== user1) {
+        if (docSnap.data() && docSnap.data().from !== user1) {
             // update last message doc, set unread to false
             await updateDoc(doc(db, "lastMsg", id), {
                 unread: false
@@ -96,7 +99,12 @@ const Home = () => {
     return (
         <div className='home_container'>
             <div className='users_container'>
-                {users.map(user => <User key={user.uid} user={user} selectUser={selectUser} user1={user1} chat={chat}/>)}
+            <Searchbar
+                placeholder={t("search_for_people")}
+                /* setSearchTerm={setSearchTerm}
+                searchTerm={searchTerm} */
+            />
+                {users.map(user => <User key={user.uid} user={user} selectUser={selectUser} user1={user1} chat={chat} />)}
             </div>
             <div className="messages_container">
                 {chat ? (
