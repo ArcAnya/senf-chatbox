@@ -16,7 +16,7 @@ const Home = () => {
     const [msgs, setMsgs] = useState("")
     const { t } = useTranslation()
     const [searchTerm, setSearchTerm] = useState("")
-    const [user, setUser] = useState('')
+    const [user, setUser] = useState("")
 
     const user1 = auth.currentUser.uid
 
@@ -94,9 +94,6 @@ const Home = () => {
             interactedUsers: arrayUnion(user2)
         })
 
-        // get list of users the current user interacted with
-        console.log(user.interactedUsers)
-
         await updateDoc(doc(db, 'users', user2), {
             interactedUsers: arrayUnion(user1)
         })
@@ -113,13 +110,31 @@ const Home = () => {
         setText("")
     }
 
+    const selectFoundUser = async (user) => {
+
+
+        await updateDoc(doc(db, 'users', user1), {
+            interactedUsers: arrayUnion(user.uid)
+        })
+
+        await updateDoc(doc(db, 'users', user.uid), {
+            interactedUsers: arrayUnion(user1)
+        })
+
+        selectUser(user)
+
+        setSearchTerm("")
+
+    }
+
     return (
         <div className='home_container'>
             <div className='users_container'>
                 <input
                     type="text"
+                    value={searchTerm}
                     placeholder={t("search_for_people")}
-                    onChange={(event) => { setSearchTerm(event.target.value) }}
+                    onChange={(event) => { setSearchTerm(event.target.value)}}
                 />
                 {searchTerm ? (
                     <div className='users_search'>
@@ -132,7 +147,7 @@ const Home = () => {
                         }
                         ).map((val, key) => {
                             return (
-                                <div key={key}>
+                                <div className="found_user" key={key} onClick={() => selectFoundUser(val)}>
                                     <p>{val.name}</p>
                                 </div>
                             )
@@ -142,7 +157,7 @@ const Home = () => {
                     null
                 }
                 {users.filter((val) => {
-                    if (user.interactedUsers.indexOf(val.uid) > -1) {
+                    if (user.interactedUsers && user.interactedUsers.indexOf(val.uid) > -1) {
                         return val
                     } else {
                         return ""
