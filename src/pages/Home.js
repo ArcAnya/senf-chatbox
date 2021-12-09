@@ -113,31 +113,15 @@ const Home = () => {
 
     const selectFoundUser = async (user) => {
 
-
-        /* await updateDoc(doc(db, 'users', user1), {
-            interactedUsers: arrayUnion(user.uid)
-        })
-
-        await updateDoc(doc(db, 'users', user.uid), {
-            interactedUsers: arrayUnion(user1)
-        }) */
-
         if (user.interactedUsers) {
             selectUser(user)
         } else {
             setNewChat(user)
             selectUser(newChat)
         }
-
-
-
         setSearchTerm("")
 
     }
-
-    /*  useEffect(() => {
- 
-     }, []) */
 
     return (
         <div className='home_container'>
