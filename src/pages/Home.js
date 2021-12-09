@@ -17,6 +17,7 @@ const Home = () => {
     const { t } = useTranslation()
     const [searchTerm, setSearchTerm] = useState("")
     const [user, setUser] = useState("")
+    const [newChat, setNewChat] = useState("")
 
     const user1 = auth.currentUser.uid
 
@@ -113,19 +114,30 @@ const Home = () => {
     const selectFoundUser = async (user) => {
 
 
-        await updateDoc(doc(db, 'users', user1), {
+        /* await updateDoc(doc(db, 'users', user1), {
             interactedUsers: arrayUnion(user.uid)
         })
 
         await updateDoc(doc(db, 'users', user.uid), {
             interactedUsers: arrayUnion(user1)
-        })
+        }) */
 
-        selectUser(user)
+        if (user.interactedUsers) {
+            selectUser(user)
+        } else {
+            setNewChat(user)
+            selectUser(newChat)
+        }
+
+
 
         setSearchTerm("")
 
     }
+
+    /*  useEffect(() => {
+ 
+     }, []) */
 
     return (
         <div className='home_container'>
@@ -134,7 +146,7 @@ const Home = () => {
                     type="text"
                     value={searchTerm}
                     placeholder={t("search_for_people")}
-                    onChange={(event) => { setSearchTerm(event.target.value)}}
+                    onChange={(event) => { setSearchTerm(event.target.value) }}
                 />
                 {searchTerm ? (
                     <div className='users_search'>
@@ -156,6 +168,7 @@ const Home = () => {
                     :
                     null
                 }
+                { newChat ? <User key={newChat.uid} user={newChat} selectUser={selectUser} user1={user1} chat={chat} /> : null }
                 {users.filter((val) => {
                     if (user.interactedUsers && user.interactedUsers.indexOf(val.uid) > -1) {
                         return val
