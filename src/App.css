@@ -323,3 +323,14 @@ section .form {
       max-width: 100%;
     }
 }
+
+.users_search {
+    position: absolute;
+    color: var(--color-1);
+    background: var(--color-2);
+    z-index: 1;
+}
+
+.found_user {
+    cursor: pointer
+}

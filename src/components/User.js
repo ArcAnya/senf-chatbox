@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import Img from '../icon-192.png'
+import Img from '../images/icons/icon-192.png'
 import { onSnapshot, doc } from '@firebase/firestore'
 import { db } from "../firebase"
 
@@ -13,7 +13,7 @@ const User = ({ user1, user, selectUser, chat }) => {
             setData(doc.data())
         })
         return () => unsub()
-    }, [])
+    }, [user1, user2])
 
     return (
         <>

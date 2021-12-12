@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import Camera from '../components/svg/Camera'
 import Delete from '../components/svg/Delete'
-import Img from '../icon-192.png'
+import Img from '../images/icons/icon-192.png'
 import { storage, db, auth } from '../firebase'
 import { ref, getDownloadURL, uploadBytes, deleteObject } from 'firebase/storage'
 import { getDoc, doc, updateDoc } from 'firebase/firestore'
